@@ -37,13 +37,13 @@ namespace CrudDapper.Controllers
             return View("CreateorEdit", product);
         }
 
-        public IActionResult Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid id)
         {
             if (id == Guid.Empty)
             {
                 return NotFound();
             }
-            var product = _productRepsitory.FindProductById(id);
+            var product = await _productRepsitory.FindProductById(id);
             if (product == null)
             {
                 return NotFound();

@@ -16,16 +16,16 @@ namespace CrudDapper
 
         public async Task<IEnumerable<Product>> GetProducts()
         {
-            const string sql = @"SELECT [NewId] AS Id, [Name], [Price], [Qty], [Description], [CreatedOn] FROM [Products]";
+            const string sql = @"SELECT [NewId], [Name], [Price], [Qty], [Description], [CreatedOn] FROM [Products]";
             using var connection = _context.CreateConnection();
             return await connection.QueryAsync<Product>(sql);
         }
 
-        public async Task<Product> FindProductById(Guid uid)
+        public async Task<Product> FindProductById(Guid id)
         {
-            const string sql = @"SELECT * FROM [Products] WHERE [NewId] = @Id";
+            const string sql = @"SELECT * FROM [Products] WHERE [NewId] = @NewId";
             using var connection = _context.CreateConnection();
-            return await connection.QueryFirstOrDefaultAsync<Product>(sql, new { Id = uid });
+            return await connection.QueryFirstOrDefaultAsync<Product>(sql, new { NewId = id });
         }
 
         public async Task<Product> Add(Product product)
@@ -33,8 +33,8 @@ namespace CrudDapper
             product.NewId = Guid.NewGuid();
             product.CreatedOn = DateTime.UtcNow;
             const string sql = @"
-                INSERT INTO [Products] (NewId, Name, Price, Qty, Description, CreatedOn, UpdateOn)
-                VALUES (@NewId, @Name, @Price, @Qty, @Description, @CreatedOn, @UpdateOn)";
+                INSERT INTO [Products] (NewId, Name, Price, Qty, Description, CreatedOn)
+                VALUES (@NewId, @Name, @Price, @Qty, @Description, @CreatedOn)";
             using var connection = _context.CreateConnection();
             await connection.ExecuteAsync(sql, product);
             return product;
@@ -61,9 +61,9 @@ namespace CrudDapper
         {
             const string sql = @"
                 UPDATE [Products]
-                SET Name = @Name, Price = @Price, Qty = @Qty, Description = @Description, UpdateOn = @UpdateOn
+                SET Name = @Name, Price = @Price, Qty = @Qty, Description = @Description
                 WHERE [NewId] = @NewId";
-            using IDbConnection connection = _context.CreateConnection();
+            using var connection = _context.CreateConnection();
             var rowsAffected = await connection.ExecuteAsync(sql, product);
             return rowsAffected > 0;
         }
