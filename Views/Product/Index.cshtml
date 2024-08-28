@@ -1,0 +1,52 @@
+﻿@model IEnumerable<CrudDapper.Models.Product>
+
+@{
+    ViewData["Title"] = "Products List";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>@ViewData["Title"]</h1>
+    <a asp-action="Create" class="btn btn-primary">Create Product</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        No products available.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model.Select((p, i) => new { Product = p, Index = i }))
+            {
+                <tr>
+                    <td>@(product.Index + 1)</td>
+                    <td>@product.Product.NewId</td>
+                    <td>@product.Product.Name</td>
+                    <td>@product.Product.Price</td>
+                    <td>@product.Product.Qty</td>
+                    <td>@product.Product.Description</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@product.Product.NewId" class="btn btn-warning btn-sm">Edit</a>
+                        <form asp-action="Delete" asp-route-id="@product.Product.NewId" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete @product.Product.Name?')">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
